@@ -1,4 +1,4 @@
-package memo
+package create
 
 import (
 	"fmt"
@@ -8,20 +8,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vinicius507/memoscli/cmd/cli"
 	"github.com/vinicius507/memoscli/memos"
 )
-
-func getEditorCmd() (string, error) {
-	editor := os.Getenv("EDITOR")
-	if editor == "" {
-		editor = "nano"
-	}
-	if _, err := exec.LookPath("editor"); err != nil {
-		return "", err
-	}
-	return editor, nil
-}
 
 func NewCreateCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -36,10 +24,21 @@ func NewCreateCmd() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("failed to create memo: %w", err)
 			}
-			model := cli.NewCreateMemoModel(client, editorCmd)
+			model := newModel(client, editorCmd)
 			_, err = tea.NewProgram(model).Run()
 			return err
 		},
 	}
 	return cmd
+}
+
+func getEditorCmd() (string, error) {
+	editor := os.Getenv("EDITOR")
+	if editor == "" {
+		editor = "nano"
+	}
+	if _, err := exec.LookPath(editor); err != nil {
+		return "", err
+	}
+	return editor, nil
 }

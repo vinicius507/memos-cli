@@ -21,8 +21,5 @@ func init() {
 
 func initConfig() {
 	viper.SetEnvPrefix("memos")
-	err := viper.BindEnv("api_url")
-	cobra.CheckErr(err)
-	err = viper.BindEnv("api_token")
-	cobra.CheckErr(err)
+	viper.AutomaticEnv()
 }

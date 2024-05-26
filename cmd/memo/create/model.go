@@ -1,23 +1,29 @@
-package cli
+package create
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/vinicius507/memoscli/memos"
+	"github.com/vinicius507/memoscli/ui"
 )
 
-type CreateMemoModel struct {
-	client        *memos.MemosClient
-	editorCommand string
+type cmdErrorMsg struct{ err error }
+
+func (e cmdErrorMsg) Error() string {
+	return e.err.Error()
 }
 
-var _ tea.Model = CreateMemoModel{}
+type model struct {
+	client    *memos.MemosClient
+	editorCmd string
+}
 
-func NewCreateMemoModel(client *memos.MemosClient, editorCommand string) CreateMemoModel {
-	return CreateMemoModel{client, editorCommand}
+var _ tea.Model = model{}
+
+func newModel(client *memos.MemosClient, editorCmd string) model {
+	return model{client: client, editorCmd: editorCmd}
 }
 
 type tempFileMsg struct{ file string }
@@ -33,9 +39,9 @@ func createTempFile() tea.Msg {
 
 type editorFinishedMsg struct{ file string }
 
-func openEditor(editor, file string) tea.Cmd {
-	cmd := exec.Command(editor, file)
-	return tea.ExecProcess(cmd, func(err error) tea.Msg {
+func openEditor(editorCmd, file string) tea.Cmd {
+	execEditor := exec.Command(editorCmd, file)
+	return tea.ExecProcess(execEditor, func(err error) tea.Msg {
 		if err != nil {
 			return cmdErrorMsg{err}
 		}
@@ -43,16 +49,18 @@ func openEditor(editor, file string) tea.Cmd {
 	})
 }
 
+type memoIsEmptyMsg struct{}
+
 type memoSavedMsg struct{ memo *memos.Memo }
 
 func saveMemo(client *memos.MemosClient, file string) tea.Cmd {
 	return func() tea.Msg {
 		content, err := os.ReadFile(file)
 		if err != nil {
-			return cmdErrorMsg{err: fmt.Errorf("could not create memo: %w", err)}
+			return cmdErrorMsg{err}
 		}
 		if len(content) == 0 {
-			return tea.Quit() // If the file is empty, just quit
+			return memoIsEmptyMsg{}
 		}
 		memo, err := client.NewMemo(string(content))
 		if err != nil {
@@ -62,21 +70,31 @@ func saveMemo(client *memos.MemosClient, file string) tea.Cmd {
 	}
 }
 
-func (m CreateMemoModel) Init() tea.Cmd {
+func (m model) Init() tea.Cmd {
 	return createTempFile
 }
 
-func (m CreateMemoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case cmdErrorMsg:
-		fmt.Printf("Error: could not create memo: %v\n", msg.err)
-		return m, tea.Quit
+		return m, tea.Sequence(
+			tea.Println(ui.RenderError(msg)),
+			tea.Quit,
+		)
 	case tempFileMsg:
-		return m, openEditor(m.editorCommand, msg.file)
+		return m, openEditor(m.editorCmd, msg.file)
 	case editorFinishedMsg:
 		return m, saveMemo(m.client, msg.file)
+	case memoIsEmptyMsg:
+		return m, tea.Sequence(
+			tea.Println(ui.RenderWarning("Nothing to save. No memo was created.")),
+			tea.Quit,
+		)
 	case memoSavedMsg:
-		return m, tea.Quit
+		return m, tea.Sequence(
+			tea.Println(ui.RenderSuccess("Memo created successfully!")),
+			tea.Quit,
+		)
 	case tea.KeyMsg:
 		if msg.String() == "q" {
 			return m, tea.Quit
@@ -85,6 +103,6 @@ func (m CreateMemoModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m CreateMemoModel) View() string {
+func (m model) View() string {
 	return ""
 }
