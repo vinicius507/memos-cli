@@ -22,6 +22,22 @@
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
   in {
+    packages.${system}.memos-cli = with pkgs;
+      buildGoModule {
+        pname = "memos-cli";
+        version = "0.1.0";
+        src = ./.;
+        vendorHash = "sha256-du7r9qNu0pNZgQfpMp+YQCl7iayUkxm5FdSAsGZ0DPI=";
+        installPhase = ''
+          install -Dm755 $GOPATH/bin/memos-cli $out/bin/memos
+        '';
+        meta = with lib; {
+          mainProgram = "memos";
+          description = "A CLI for managing Memos";
+          homepage = "https://github.com/vinicius507/memos-cli";
+          license = licenses.mit;
+        };
+      };
     devShells.${system}.default = devenv.lib.mkShell {
       inherit inputs pkgs;
       modules = [
