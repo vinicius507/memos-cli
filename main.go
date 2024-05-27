@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/vinicius507/memoscli/cmd"
+	"github.com/vinicius507/memos-cli/cmd"
 )
 
 func main() {

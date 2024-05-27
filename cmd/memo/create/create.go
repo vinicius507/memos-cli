@@ -8,7 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vinicius507/memoscli/memos"
+	"github.com/vinicius507/memos-cli/memos"
 )
 
 func NewCreateCmd() *cobra.Command {

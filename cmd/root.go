@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vinicius507/memoscli/cmd/memo"
+	"github.com/vinicius507/memos-cli/cmd/memo"
 )
 
 func NewRootCmd() *cobra.Command {

@@ -1,4 +1,4 @@
-module github.com/vinicius507/memoscli
+module github.com/vinicius507/memos-cli
 
 go 1.22.1
 

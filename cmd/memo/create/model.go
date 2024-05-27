@@ -5,8 +5,8 @@ import (
 	"os/exec"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/vinicius507/memoscli/memos"
-	"github.com/vinicius507/memoscli/ui"
+	"github.com/vinicius507/memos-cli/memos"
+	"github.com/vinicius507/memos-cli/ui"
 )
 
 type cmdErrorMsg struct{ err error }
