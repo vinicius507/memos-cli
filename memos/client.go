@@ -15,7 +15,7 @@ type MemosClient struct {
 
 func (c *MemosClient) request(method, path string, body io.Reader) (*http.Response, error) {
 	httpClient := newHttpClient()
-	url := c.ServerAddr + path
+	url := c.ServerAddr + "/api/v1" + path
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
