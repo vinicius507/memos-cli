@@ -15,10 +15,19 @@ func NewCreateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create",
 		Short: "Create a new memo",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if !viper.IsSet("api.url") {
+				return fmt.Errorf("missing api_url in config file")
+			}
+			if !viper.IsSet("api.token") {
+				return fmt.Errorf("missing api_token in config file")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client := &memos.MemosClient{
-				ServerAddr:  viper.GetString("api_url"),
-				AccessToken: viper.GetString("api_token"),
+				ServerAddr:  viper.GetString("api.url"),
+				AccessToken: viper.GetString("api.token"),
 			}
 			editorCmd, err := getEditorCmd()
 			if err != nil {
