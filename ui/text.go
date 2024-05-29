@@ -6,7 +6,7 @@ import (
 
 var (
 	errorStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("9")).SetString("").MarginRight(1)
-	warningStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("11")).SetString("").MarginRight(1)
+	warningStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("11")).SetString("").MarginRight(1)
 	successStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("10")).SetString("󰄬").MarginRight(1)
 )
 
