@@ -7,13 +7,16 @@ import (
 	"github.com/vinicius507/memos-cli/cmd/create"
 )
 
-func NewRootCmd() *cobra.Command {
+func Execute() {
 	cmd := &cobra.Command{
 		Use:   "memos",
 		Short: "A CLI client for Memos",
 	}
 	cmd.AddCommand(create.New())
-	return cmd
+	if err := cmd.Execute(); err != nil {
+		cmd.PrintErr(err)
+		os.Exit(1)
+	}
 }
 
 func init() {
