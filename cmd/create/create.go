@@ -11,10 +11,11 @@ import (
 	"github.com/vinicius507/memos-cli/memos"
 )
 
-func NewCreateCmd() *cobra.Command {
+func New() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create",
-		Short: "Create a new memo",
+		Use:     "create",
+		Short:   "Create a new memo",
+		Aliases: []string{"c", "new"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if !viper.IsSet("api.url") {
 				return fmt.Errorf("missing api_url in config file")

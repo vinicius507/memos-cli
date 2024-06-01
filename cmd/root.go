@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vinicius507/memos-cli/cmd/memo"
+	"github.com/vinicius507/memos-cli/cmd/create"
 )
 
 var cfgFile string
@@ -15,7 +15,7 @@ func NewRootCmd() *cobra.Command {
 		Use:   "memos",
 		Short: "A CLI client for Memos",
 	}
-	cmd.AddCommand(memo.NewMemoCmd())
+	cmd.AddCommand(create.New())
 	return cmd
 }
 
