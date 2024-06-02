@@ -17,5 +17,6 @@ After you save and close the editor, the memo will be created.
 ## Roadmap
 
 - [X] Create a new memo
+- [ ] Improve folder structure
 - [ ] List memos
 - [ ] Edit memos
