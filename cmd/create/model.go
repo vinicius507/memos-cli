@@ -6,6 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/vinicius507/memos-cli/memos"
+	"github.com/vinicius507/memos-cli/pkg/cmd"
 )
 
 type cmdErrorMsg struct{ err error }
@@ -77,7 +78,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case cmdErrorMsg:
 		return m, tea.Sequence(
-			tea.Println(errorStyle.Render(msg.Error())),
+			cmd.PrintError(msg.err),
 			tea.Quit,
 		)
 	case tempFileMsg:
@@ -86,12 +87,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, saveMemo(m.client, msg.file)
 	case memoIsEmptyMsg:
 		return m, tea.Sequence(
-			tea.Println(warningStyle.Render("Nothing to save. No memo was created.")),
+			cmd.PrintWarning("Nothing to save. No memo was created."),
 			tea.Quit,
 		)
 	case memoSavedMsg:
 		return m, tea.Sequence(
-			tea.Println(successStyle.Render("Memo created successfully!")),
+			cmd.PrintSuccess("Memo created successfully!"),
 			tea.Quit,
 		)
 	case tea.KeyMsg:

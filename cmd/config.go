@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/vinicius507/memos-cli/ui/styles"
 )
 
 var cfg Config
@@ -28,13 +29,16 @@ func initConfig() {
 	viper.SetEnvPrefix("memos")
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {
-		cobra.CheckErr(err)
+		os.Stderr.WriteString(styles.ErrorMsg.Render(err.Error()) + "\n")
+		os.Exit(1)
 	}
 	if err := viper.Unmarshal(&cfg); err != nil {
-		cobra.CheckErr(err)
+		os.Stderr.WriteString(styles.ErrorMsg.Render(err.Error()) + "\n")
+		os.Exit(1)
 	}
 	if err := validateConfig(cfg); err != nil {
-		cobra.CheckErr(fmt.Errorf("invalid configuration: %w", err))
+		os.Stderr.WriteString(styles.ErrorMsg.Render(err.Error()) + "\n")
+		os.Exit(1)
 	}
 }
 
