@@ -7,7 +7,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/vinicius507/memos-cli/config"
 	"github.com/vinicius507/memos-cli/memos"
 )
 
@@ -17,17 +17,20 @@ func New() *cobra.Command {
 		Short:   "Create a new memo",
 		Aliases: []string{"c", "new"},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			cfg := config.GetConfig()
 			client := &memos.MemosClient{
-				ServerAddr:  viper.GetString("api.url"),
-				AccessToken: viper.GetString("api.token"),
+				ServerAddr:  cfg.Api.Url,
+				AccessToken: cfg.Api.AccessToken,
 			}
 			editorCmd, err := getEditorCmd()
 			if err != nil {
 				return fmt.Errorf("failed to create memo: %w", err)
 			}
 			model := newModel(client, editorCmd)
-			_, err = tea.NewProgram(model).Run()
-			return err
+			if _, err = tea.NewProgram(model).Run(); err != nil {
+				return err
+			}
+			return nil
 		},
 	}
 	return cmd

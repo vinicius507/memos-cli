@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vinicius507/memos-cli/cmd/create"
-	"github.com/vinicius507/memos-cli/pkg/config"
+	"github.com/vinicius507/memos-cli/config"
 	"github.com/vinicius507/memos-cli/ui/styles"
 )
 
