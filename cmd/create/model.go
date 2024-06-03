@@ -4,9 +4,11 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/vinicius507/memos-cli/memos"
 	"github.com/vinicius507/memos-cli/ui/cmd"
+	"github.com/vinicius507/memos-cli/ui/styles"
 )
 
 type cmdErrorMsg struct{ err error }
@@ -18,12 +20,17 @@ func (e cmdErrorMsg) Error() string {
 type model struct {
 	client    *memos.Client
 	editorCmd string
+	spinner   spinner.Model
+	saving    bool
 }
 
 var _ tea.Model = model{}
 
 func newModel(client *memos.Client, editorCmd string) model {
-	return model{client: client, editorCmd: editorCmd}
+	sp := spinner.New()
+	sp.Spinner = spinner.Dot
+	sp.Style = styles.LoadingMsg
+	return model{client: client, editorCmd: editorCmd, spinner: sp}
 }
 
 type tempFileMsg struct{ file string }
@@ -84,6 +91,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tempFileMsg:
 		return m, openEditor(m.editorCmd, msg.file)
 	case editorFinishedMsg:
+		m.saving = true
 		return m, saveMemo(m.client, msg.file)
 	case memoIsEmptyMsg:
 		return m, tea.Sequence(
@@ -104,5 +112,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	if m.saving {
+		return m.spinner.View() + " Saving memo..."
+	}
 	return ""
 }

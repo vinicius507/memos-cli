@@ -10,6 +10,8 @@ var (
 	ErrorMsg   = msgStyle(errorIcon)
 	WarningMsg = msgStyle(warningIcon)
 	SuccessMsg = msgStyle(successIcon)
+
+	LoadingMsg = lipgloss.NewStyle().Foreground(lipgloss.Color("12"))
 )
 
 func icon(icon string, color lipgloss.Color) lipgloss.Style {

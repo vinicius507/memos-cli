@@ -3,6 +3,7 @@ module github.com/vinicius507/memos-cli
 go 1.22.1
 
 require (
+	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v0.26.3
 	github.com/charmbracelet/lipgloss v0.11.0
 	github.com/spf13/cobra v1.8.0
