@@ -43,3 +43,25 @@ func (c *Client) NewMemo(content string) (*Memo, error) {
 	}
 	return memo, nil
 }
+
+type ListMemosResponse struct {
+	NextPageToken string  `json:"nextPageToken"`
+	Memos         []*Memo `json:"memos"`
+}
+
+func (c *Client) ListMemos() (*ListMemosResponse, error) {
+	res, err := c.request(http.MethodGet, "/memos", nil)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	listMemosResponse := &ListMemosResponse{}
+	if err := json.Unmarshal(body, listMemosResponse); err != nil {
+		return nil, err
+	}
+	return listMemosResponse, nil
+}

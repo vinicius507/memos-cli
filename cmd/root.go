@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vinicius507/memos-cli/cmd/create"
+	"github.com/vinicius507/memos-cli/cmd/list"
 	"github.com/vinicius507/memos-cli/config"
 	"github.com/vinicius507/memos-cli/ui/styles"
 )
@@ -15,7 +16,7 @@ func Execute() {
 		Use:   "memos",
 		Short: "A CLI client for Memos",
 	}
-	cmd.AddCommand(create.New())
+	cmd.AddCommand(create.New(), list.New())
 	if err := cmd.Execute(); err != nil {
 		msg := styles.ErrorMsg.Render(err.Error())
 		cmd.Println(msg)
