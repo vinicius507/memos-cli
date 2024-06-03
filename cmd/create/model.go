@@ -6,7 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/vinicius507/memos-cli/memos"
-	"github.com/vinicius507/memos-cli/pkg/cmd"
+	"github.com/vinicius507/memos-cli/ui/cmd"
 )
 
 type cmdErrorMsg struct{ err error }
