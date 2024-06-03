@@ -16,13 +16,13 @@ func (e cmdErrorMsg) Error() string {
 }
 
 type model struct {
-	client    *memos.MemosClient
+	client    *memos.Client
 	editorCmd string
 }
 
 var _ tea.Model = model{}
 
-func newModel(client *memos.MemosClient, editorCmd string) model {
+func newModel(client *memos.Client, editorCmd string) model {
 	return model{client: client, editorCmd: editorCmd}
 }
 
@@ -53,7 +53,7 @@ type memoIsEmptyMsg struct{}
 
 type memoSavedMsg struct{ memo *memos.Memo }
 
-func saveMemo(client *memos.MemosClient, file string) tea.Cmd {
+func saveMemo(client *memos.Client, file string) tea.Cmd {
 	return func() tea.Msg {
 		content, err := os.ReadFile(file)
 		if err != nil {

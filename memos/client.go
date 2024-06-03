@@ -8,12 +8,12 @@ import (
 	"strings"
 )
 
-type MemosClient struct {
+type Client struct {
 	ServerAddr  string
 	AccessToken string
 }
 
-func (c *MemosClient) request(method, path string, body io.Reader) (*http.Response, error) {
+func (c *Client) request(method, path string, body io.Reader) (*http.Response, error) {
 	httpClient := newHttpClient()
 	url := c.ServerAddr + "/api/v1" + path
 	req, err := http.NewRequest(method, url, body)
@@ -24,7 +24,7 @@ func (c *MemosClient) request(method, path string, body io.Reader) (*http.Respon
 	return httpClient.Do(req)
 }
 
-func (c *MemosClient) NewMemo(content string) (*Memo, error) {
+func (c *Client) NewMemo(content string) (*Memo, error) {
 	body := fmt.Sprintf(`{"content": %q}`, content)
 	reader := strings.NewReader(body)
 

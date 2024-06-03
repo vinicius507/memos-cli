@@ -18,7 +18,7 @@ func New() *cobra.Command {
 		Aliases: []string{"c", "new"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg := config.GetConfig()
-			client := &memos.MemosClient{
+			client := &memos.Client{
 				ServerAddr:  cfg.Api.Url,
 				AccessToken: cfg.Api.AccessToken,
 			}
