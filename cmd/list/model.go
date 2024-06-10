@@ -24,12 +24,10 @@ func newModel(client *memos.Client) *model {
 	sp := spinner.New()
 	sp.Spinner = spinner.Points
 	sp.Style = styles.LoadingMsg
-	memos := feed.Model{}
 
 	return &model{
 		client:  client,
 		loading: true,
-		memos:   memos,
 		spinner: sp,
 	}
 }
@@ -54,14 +52,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case memosListMsg:
 		m.loading = false
+		var items []feed.Item
 		for _, memo := range msg.memos {
-			m.memos.Items = append(m.memos.Items, feed.Item{Content: memo.Content})
+			items = append(items, feed.Item{Content: memo.Content})
 		}
-		return m, nil
+		cmds = append(cmds, m.memos.SetItems(items))
 	}
 
-	m.spinner, cmd = m.spinner.Update(msg)
-	cmds = append(cmds, cmd)
+	if m.loading {
+		m.spinner, cmd = m.spinner.Update(msg)
+		cmds = append(cmds, cmd)
+	}
 	m.memos, cmd = m.memos.Update(msg)
 	cmds = append(cmds, cmd)
 	return m, tea.Batch(cmds...)
