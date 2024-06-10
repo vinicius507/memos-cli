@@ -1,16 +1,19 @@
 package list
 
 import (
+	"fmt"
+
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/vinicius507/memos-cli/memos"
+	"github.com/vinicius507/memos-cli/ui/feed"
 	"github.com/vinicius507/memos-cli/ui/styles"
 )
 
 type model struct {
 	err     error
 	client  *memos.Client
-	memos   []*memos.Memo
+	memos   feed.Model
 	spinner spinner.Model
 	loading bool
 }
@@ -21,10 +24,13 @@ func newModel(client *memos.Client) *model {
 	sp := spinner.New()
 	sp.Spinner = spinner.Points
 	sp.Style = styles.LoadingMsg
+	memos := feed.Model{}
+
 	return &model{
 		client:  client,
-		spinner: sp,
 		loading: true,
+		memos:   memos,
+		spinner: sp,
 	}
 }
 
@@ -33,47 +39,45 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+	var cmds []tea.Cmd
+
 	switch msg := msg.(type) {
 	case cmdErrorMsg:
 		m.loading = false
 		m.err = msg.err
-		return m, nil
-	case memosListMsg:
-		m.loading = false
-		m.memos = msg.memos
 		return m, nil
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		}
-	default:
-		var cmd tea.Cmd
-		m.spinner, cmd = m.spinner.Update(msg)
-		return m, cmd
+	case memosListMsg:
+		m.loading = false
+		for _, memo := range msg.memos {
+			m.memos.Items = append(m.memos.Items, feed.Item{Content: memo.Content})
+		}
+		return m, nil
 	}
-	return m, nil
+
+	m.spinner, cmd = m.spinner.Update(msg)
+	cmds = append(cmds, cmd)
+	m.memos, cmd = m.memos.Update(msg)
+	cmds = append(cmds, cmd)
+	return m, tea.Batch(cmds...)
 }
 
 func (m model) View() string {
-	var msg string
 	if m.err != nil {
-		msg = styles.ErrorMsg.Render(m.err.Error()) + "\n"
-		msg += "Press q or Ctrl+C to quit."
-		return msg
+		return fmt.Sprintf(
+			"%s\nPress q or Ctrl+C to quit.",
+			styles.ErrorMsg.Render(m.err.Error())+"\n",
+		)
 	}
 	if m.loading {
-		msg += m.spinner.View()
-		msg += " Loading memos"
-		return msg
+		return m.spinner.View() + " Loading memos"
 	}
-	if len(m.memos) == 0 {
-		return styles.WarningMsg.Render("No memos found.")
-	}
-	for _, memo := range m.memos {
-		msg += memo.Content + "\n\n"
-	}
-	return msg
+	return m.memos.View()
 }
 
 type cmdErrorMsg struct{ err error }
