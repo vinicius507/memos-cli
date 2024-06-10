@@ -45,6 +45,7 @@
           env.CGO_ENABLED = 0;
           packages = with pkgs; [
             cobra-cli
+            delve
           ];
           languages.go.enable = true;
         }
